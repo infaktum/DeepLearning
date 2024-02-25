@@ -95,6 +95,22 @@ class NeuralNetwork:
     def result(self, inputs: np.ndarray) -> int:
         return np.argmax(self.query(inputs))
 
+    def performance(self,test_data):
+        '''
+        Testet die Leistung des Neuronalen Netzwerkes mit Hilfe von Testdaten. 
+        Es wird ein Wert fuer die Zuverlaessigkeit und die Liste der falschen Zuordnungen zurueckgegeben.
+        '''
+        fails = []
+        for n,record in enumerate(test_data):
+            correct_label = int(record[0])
+            inputs = (np.asfarray(record[1:]) / 255.0 * 0.98) + 0.01
+            outputs = self.query(inputs)
+            label = np.argmax(outputs)
+            if (label != correct_label):
+                fails.append(n)
+        performance =  1. - (len(fails) / len(test_data))
+        return performance , fails
+
     def save(self,file: str) -> None:
         '''Speichert die Gewichte des Netzwerks'''
         with open(file + '.npy', 'wb') as f:
